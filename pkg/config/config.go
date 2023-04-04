@@ -8,11 +8,13 @@ import (
 )
 
 type Config struct {
-	RPCURL     string `mapstructure:"ETH_RPC_URL"`
-	PRIVATEKEY string `mapstructure:"PRIVATE_KEY"`
-	GASLIMIT   int64  `mapstructure:"GAS_LIMIT"`
-	TOKEN      string `mapstructure:"TOKEN_FILE_NAME"`
-	AIRDROP    string `mapstructure:"AIRDROP_FILE_NAME"`
+	RPCURL      string `mapstructure:"ETH_RPC_URL"`
+	PRIVATEKEY  string `mapstructure:"PRIVATE_KEY"`
+	GASLIMIT    int64  `mapstructure:"GAS_LIMIT"`
+	TOKEN       string `mapstructure:"TOKEN_FILE_NAME"`
+	TOKENADDR   string `mapstructure:"TOKEN_CONTRACT_ADDR"`
+	AIRDROP     string `mapstructure:"AIRDROP_FILE_NAME"`
+	AIRDROPADDR string `mapstructure:"AIRDROP_CONTRACT_ADDR"`
 }
 
 // LoadConfig reads configuration from file or environment variables.

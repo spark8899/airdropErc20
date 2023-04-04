@@ -19,4 +19,6 @@ func init() {
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(deployCmd)
+	rootCmd.AddCommand(getAddrBalanceCmd)
+	rootCmd.AddCommand(getTokenBalanceCmd)
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/spark8899/airdropErc20/pkg/config"
-	"github.com/spark8899/airdropErc20/pkg/deploy"
+	"github.com/spark8899/airdropErc20/pkg/contract"
 	"github.com/spf13/cobra"
 )
 
@@ -26,14 +26,44 @@ var deployCmd = &cobra.Command{
 		if contact_name == "token" {
 			fmt.Println("deploy contract:", config.TOKEN)
 			fmt.Println("RPC URL:", config.RPCURL)
-			deploy.Deploy(config.TOKEN)
+			contract.Deploy(config.TOKEN)
 		} else if contact_name == "airdrop" {
 			fmt.Println("deploy contract:", config.AIRDROP)
 			fmt.Println("RPC URL:", config.RPCURL)
-			deploy.Deploy(config.AIRDROP)
+			contract.Deploy(config.AIRDROP)
 		} else {
 			fmt.Println("please input contract name in (token|airdrop), you input:", contact_name)
 			os.Exit(15)
 		}
+	},
+}
+
+var getAddrBalanceCmd = &cobra.Command{
+	Use:   "getAddrBalance",
+	Short: "get eth addr balance.",
+	Long:  "get eth addr balance.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		addrStr := strings.TrimSpace(args[0])
+		if addrStr == "" {
+			fmt.Println("Enter addrStr is empty")
+			os.Exit(5)
+		}
+		contract.AddrBalance(addrStr)
+	},
+}
+
+var getTokenBalanceCmd = &cobra.Command{
+	Use:   "getTokenBalance",
+	Short: "get token addr balance.",
+	Long:  "get token addr balance.",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		addrStr := strings.TrimSpace(args[0])
+		if addrStr == "" {
+			fmt.Println("Enter addrStr is empty")
+			os.Exit(5)
+		}
+		contract.TokenBalance(addrStr)
 	},
 }
