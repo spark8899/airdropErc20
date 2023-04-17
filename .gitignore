@@ -18,3 +18,4 @@ airdropErc20
 build/
 logs/
 node_modules/
+*.csv

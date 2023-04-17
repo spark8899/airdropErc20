@@ -21,4 +21,5 @@ func init() {
 	rootCmd.AddCommand(deployCmd)
 	rootCmd.AddCommand(getAddrBalanceCmd)
 	rootCmd.AddCommand(getTokenBalanceCmd)
+	rootCmd.AddCommand(airdropCmd)
 }

@@ -15,6 +15,7 @@ type Config struct {
 	TOKENADDR   string `mapstructure:"TOKEN_CONTRACT_ADDR"`
 	AIRDROP     string `mapstructure:"AIRDROP_FILE_NAME"`
 	AIRDROPADDR string `mapstructure:"AIRDROP_CONTRACT_ADDR"`
+	AIRDROPFILE string `mapstructure:"AIRDROP_FILES"`
 }
 
 // LoadConfig reads configuration from file or environment variables.

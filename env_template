@@ -1,5 +1,8 @@
-URL: https://ethereum-goerli-rpc.allthatnode.com
+ETH_RPC_URL: https://ethereum-goerli-rpc.allthatnode.com
 PRIVATE_KEY: 0xAAAAAAAAA
 GAS_LIMIT: 5000000
 TOKEN_FILE_NAME: TtToken
+TOKEN_CONTRACT_ADDR: 0xaaaaaaaaaaaaaaaaaaaaaaa
 AIRDROP_FILE_NAME: AirDropper
+AIRDROP_CONTRACT_ADDR: 0xbbbbbbbbbbbbbbbbbbbbbbb
+AIRDROP_FILES: airdrop.csv
