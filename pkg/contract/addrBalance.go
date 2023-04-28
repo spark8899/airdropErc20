@@ -17,12 +17,12 @@ func AddrBalance(addrStr string) {
 	addrStr = strings.Trim(addrStr, " ")
 	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("cannot load config, error: ", err)
+		log.Fatal("Cannot load config, error: ", err)
 	}
 	// connect eth client
 	client, err := ethclient.Dial(config.RPCURL)
 	if err != nil {
-		log.Fatal("cannot connect rpc, error: ", err)
+		log.Fatal("Cannot connect rpc, error: ", err)
 	}
 
 	account := common.HexToAddress(addrStr)

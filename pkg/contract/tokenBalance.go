@@ -15,27 +15,27 @@ import (
 func TokenBalance(addrStr string) (*big.Float, error) {
 	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("cannot load config, error: ", err)
+		log.Fatal("Cannot load config, error: ", err)
 	}
 	// connect eth client
 	client, err := ethclient.Dial(config.RPCURL)
 	if err != nil {
-		log.Fatal("cannot connect rpc, error: ", err)
+		log.Fatal("Cannot connect rpc, error: ", err)
 	}
 
 	conn, err := NewTokenContracts(common.HexToAddress(config.TOKENADDR), client)
 	if err != nil {
-		log.Fatal("cannot init contract, error: ", err)
+		log.Fatal("Cannot init contract, error: ", err)
 		panic(err)
 	}
 
 	balance, err := conn.BalanceOf(&bind.CallOpts{}, common.HexToAddress(addrStr))
 	if err != nil {
-		log.Fatal("cannot get balanceOf, error: ", err)
+		log.Fatal("Cannot get balanceOf, error: ", err)
 	}
 	decimals, err := conn.Decimals(&bind.CallOpts{})
 	if err != nil {
-		log.Fatal("cannot get decimals, error: ", err)
+		log.Fatal("Cannot get decimals, error: ", err)
 	}
 
 	fbalance := new(big.Float)

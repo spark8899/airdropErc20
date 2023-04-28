@@ -11,7 +11,7 @@ interface IERC20 {
 contract AirDropper is Ownable {
 
     constructor(){
-
+        // init.
     }
 
     function withdrawToken(address token, address to) external onlyOwner{
@@ -26,7 +26,7 @@ contract AirDropper is Ownable {
         payable(to==address(0)?msg.sender:to).transfer(balance);
     }
 
-    function doAirDrop1(address token, address[] memory dests, uint256 value) public onlyOwner {
+    function doAirDropSingle(address token, address[] memory dests, uint256 value) public onlyOwner {
 
         for(uint256 i=0;i<dests.length;i++){
             IERC20(token).transfer(dests[i], value);
@@ -34,7 +34,7 @@ contract AirDropper is Ownable {
 
     }
 
-    function doAirDrop2(address token, address[] memory dests, uint256[] memory values) public onlyOwner {
+    function doAirDropMultiple(address token, address[] memory dests, uint256[] memory values) public onlyOwner {
 
         require(dests.length == values.length,
             "length not match"

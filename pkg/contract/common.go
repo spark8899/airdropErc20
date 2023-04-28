@@ -17,37 +17,37 @@ func getAccountAuth(client *ethclient.Client, privateKeyStr string, gasLimit uin
 	privateKeyWithoutPrefix := strings.TrimPrefix(privateKeyStr, "0x")
 	privateKey, err := crypto.HexToECDSA(privateKeyWithoutPrefix)
 	if err != nil {
-		log.Fatal("cannot load privateKey, error: ", err)
+		log.Fatal("Cannot load privateKey, error: ", err)
 		return nil, err
 	}
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		log.Fatal("error casting public key to ECDSA, error: ", err)
+		log.Fatal("Error casting public key to ECDSA, error: ", err)
 		return nil, err
 	}
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
-		log.Fatal("cannot get nonce, error: ", err)
+		log.Fatal("Cannot get nonce, error: ", err)
 		return nil, err
 	}
 	chainID, err := client.ChainID(context.Background())
 	if err != nil {
-		log.Fatal("cannot get chainID, error: ", err)
+		log.Fatal("Cannot get chainID, error: ", err)
 		return nil, err
 	}
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
-		log.Fatal("cannot get gasPrice, error: ", err)
+		log.Fatal("Cannot get gasPrice, error: ", err)
 		return nil, err
 	}
 
 	// Construct transaction data
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, chainID)
 	if err != nil {
-		log.Fatal("cannot deploy contract, error: ", err)
+		log.Fatal("Cannot get auth, error: ", err)
 		return nil, err
 	}
 	auth.Nonce = big.NewInt(int64(nonce))

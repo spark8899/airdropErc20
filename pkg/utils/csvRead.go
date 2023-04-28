@@ -3,37 +3,45 @@ package utils
 import (
 	"encoding/csv"
 	"os"
+	"strconv"
 )
 
 type CsvDataLines struct {
-	Address string
-	Amount  string
+	Address []string
+	Amount  []int64
 }
 
-func ReadCsvFile(filename string) ([]CsvDataLines, error) {
+func ReadCsvFile(filename string) (CsvDataLines, error) {
 	// Open CSV file
 	fileContent, err := os.Open(filename)
 	if err != nil {
-		return nil, err
+		return CsvDataLines{}, err
 	}
 	defer fileContent.Close()
 
 	// Read File into a Variable
 	csvData, err := csv.NewReader(fileContent).ReadAll()
 	if err != nil {
-		return nil, err
+		return CsvDataLines{}, err
 	}
 
-	var dataGroup []CsvDataLines
+	var address []string
+	var amount []int64
 	for i, line := range csvData {
 		if i > 0 {
-			dataGroup = append(dataGroup,
-				CsvDataLines{
-					Address: line[0],
-					Amount:  line[1],
-				})
+			address = append(address, line[0])
+			n, err := strconv.ParseInt(line[1], 10, 64)
+			if err != nil {
+				return CsvDataLines{}, err
+			}
+			amount = append(amount, n)
 		}
 	}
 
-	return dataGroup, nil
+	dataInfo := CsvDataLines{
+		address,
+		amount,
+	}
+
+	return dataInfo, nil
 }

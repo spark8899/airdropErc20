@@ -24,15 +24,15 @@ var deployCmd = &cobra.Command{
 		}
 
 		if contact_name == "token" {
-			fmt.Println("deploy contract:", config.TOKEN)
+			fmt.Println("Deploy contract:", config.TOKEN)
 			fmt.Println("RPC URL:", config.RPCURL)
 			contract.Deploy(config.TOKEN)
 		} else if contact_name == "airdrop" {
-			fmt.Println("deploy contract:", config.AIRDROP)
+			fmt.Println("Deploy contract:", config.AIRDROP)
 			fmt.Println("RPC URL:", config.RPCURL)
 			contract.Deploy(config.AIRDROP)
 		} else {
-			fmt.Println("please input contract name in (token|airdrop), you input:", contact_name)
+			fmt.Println("Please input contract name in (token|airdrop), you input:", contact_name)
 			os.Exit(15)
 		}
 	},

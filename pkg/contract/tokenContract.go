@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/big"
+	"os"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -208,25 +209,28 @@ func (_Contracts *TokenContractsTransactorSession) TransferFrom(from common.Addr
 func getTokenMetaData() *bind.MetaData {
 	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal("cannot load config, error: ", err)
+		log.Fatal("Cannot load config, error: ", err)
 	}
 
 	processPath, err := utils.ProcessPath()
 	if err != nil {
 		log.Fatal("Error get process path ", err)
 	}
-	processPath = "."
-
-	abiPath := fmt.Sprintf("%s/contracts/%s.abi", processPath, config.TOKEN)
-	abiString, err := utils.ReadFileStr(abiPath)
+	_, err = os.Stat(fmt.Sprintf("%s/%s", processPath, ".env"))
 	if err != nil {
-		log.Fatal("read abi files error: ", err)
+		processPath = "."
 	}
 
-	bytecodePath := fmt.Sprintf("%s/contracts/%s.bin", processPath, config.TOKEN)
+	abiPath := fmt.Sprintf("%s/contracts/%s/%s.abi", processPath, config.TOKEN, config.TOKEN)
+	abiString, err := utils.ReadFileStr(abiPath)
+	if err != nil {
+		log.Fatal("Read abi files error: ", err)
+	}
+
+	bytecodePath := fmt.Sprintf("%s/contracts/%s/%s.bin", processPath, config.TOKEN, config.TOKEN)
 	bytecode, err := utils.ReadFileStr(bytecodePath)
 	if err != nil {
-		log.Fatal("read abi files error: ", err)
+		log.Fatal("Read abi files error: ", err)
 	}
 
 	return &bind.MetaData{ABI: abiString, Bin: bytecode}

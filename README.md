@@ -23,18 +23,59 @@ solcjs --base-path node_modules --optimize --abi contracts/TtToken.sol -o build
 solcjs --base-path node_modules --optimize --bin contracts/TtToken.sol -o build
 mv ./build/*TtToken.abi ./build/TtToken.abi
 mv ./build/*TtToken.bin ./build/TtToken.bin
-cp build/TtToken.* contracts
-abigen --abi=./build/TtToken.abi --bin=./build/TtToken.bin --pkg=contracts --out=./contracts/TtToken.go
+cp build/TtToken.* contracts/TtToken/
+abigen --abi=./build/TtToken.abi --bin=./build/TtToken.bin --pkg=TtToken --out=./contracts/TtToken/TtToken.go
 
 solcjs --base-path node_modules --optimize --abi contracts/AirDropper.sol -o build
 solcjs --base-path node_modules --optimize --bin contracts/AirDropper.sol -o build
 mv ./build/*AirDropper.abi ./build/AirDropper.abi
 mv ./build/*AirDropper.bin ./build/AirDropper.bin
-cp build/AirDropper.* contracts
-abigen --abi=./build/AirDropper.abi --bin=./build/AirDropper.bin --pkg=contracts --out=./contracts/AirDropper.go
+cp build/AirDropper.* contracts/AirDropper/
+abigen --abi=./build/AirDropper.abi --bin=./build/AirDropper.bin --pkg=AirDropper --out=./contracts/AirDropper/AirDropper.go
 ```
 
 # build airdrop
 ```
 go build -o airdropErc20 main.go
+```
+
+# modify config files
+```
+cp env_template .env
+vim .env
+```
+
+# deploy contract
+token
+```
+./airdropErc20 deploy token
+```
+
+airdrop
+```
+./airdropErc20 deploy airdrop
+```
+
+# airdrop
+
+add csv file
+```
+cp airdrop.csv_template airdrop.csv
+vim airdrop.csv
+```
+
+execute the airdrop
+```
+./airdropErc20 airdrop
+```
+
+# other features
+get eth balance
+```
+./airdropErc20 getAddrBalance <address>
+```
+
+get token balance
+```
+./airdropErc20 getTokenBalance <address>
 ```

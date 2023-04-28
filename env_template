@@ -6,3 +6,4 @@ TOKEN_CONTRACT_ADDR: 0xaaaaaaaaaaaaaaaaaaaaaaa
 AIRDROP_FILE_NAME: AirDropper
 AIRDROP_CONTRACT_ADDR: 0xbbbbbbbbbbbbbbbbbbbbbbb
 AIRDROP_FILES: airdrop.csv
+AIRDROP_PER: 200 # How many addresses to airdrop at one time
