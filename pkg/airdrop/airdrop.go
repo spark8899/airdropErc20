@@ -1,13 +1,17 @@
 package airdrop
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/big"
 	"os"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/spark8899/airdropErc20/pkg/config"
+	"github.com/spark8899/airdropErc20/pkg/contract"
 	"github.com/spark8899/airdropErc20/pkg/utils"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -15,6 +19,8 @@ import (
 )
 
 var AirDropperMetaData *bind.MetaData
+
+const oneGwei = 1e9
 
 func init() {
 	AirDropperMetaData = getAirDropperMetaData()
@@ -25,7 +31,32 @@ func Airdrop() {
 	if err != nil {
 		log.Fatal("Cannot load config:", err)
 	}
+	gasPriceLimit := new(big.Int).Mul(big.NewInt(int64(config.GASLIMIT)), big.NewInt(oneGwei))
+	increaseGas := big.NewInt(config.INCREASEGAS * oneGwei)
+	airdropAddress := common.HexToAddress(config.AIRDROPADDR)
+	// connect eth client
+	client, err := ethclient.Dial(config.RPCURL)
+	if err != nil {
+		log.Fatal("Cannot connect rpc, error: ", err)
+	}
+	// get auth
+	auth, err := contract.GetAccountAuth(client, config.PRIVATEKEY, config.GASLIMIT)
+	if err != nil {
+		log.Fatal("Cannot load abi, error: ", err)
+	}
+	// get callOpts
+	callOpts := &bind.CallOpts{
+		BlockNumber: nil,
+		Context:     context.Background(),
+	}
+	// get transacOpts
+	transacOpts := bind.TransactOpts{
+		From:    auth.From,
+		Signer:  auth.Signer,
+		Context: context.Background(),
+	}
 
+	// get airdrop address
 	csvData, err := utils.ReadCsvFile(config.AIRDROPFILE)
 	if err != nil {
 		log.Fatal("Get csv data error:", err)
@@ -50,10 +81,72 @@ func Airdrop() {
 	fmt.Println("airdrop count:", count)
 	fmt.Println("Address:", csvData.Address)
 	fmt.Println("Amount:", csvData.Amount)
+	fmt.Println("TotalAmount:", csvData.TotalAmount)
+
+	token, err := contract.NewTokenContracts(common.HexToAddress(config.TOKENADDR), client)
+	if err != nil {
+		log.Fatal("Cannot init token contract, error: ", err)
+		panic(err)
+	}
+
+	airdrop, err := NewAirDropper(airdropAddress, client)
+	if err != nil {
+		log.Fatal("Cannot init airdrop contract, error: ", err)
+		panic(err)
+	}
+
+	// ====aprove
+	allowance, err := token.Allowance(callOpts, auth.From, airdropAddress)
+	if err != nil {
+		log.Fatal("Cannot get token Allowance, error: ", err)
+		panic(err)
+	}
+
+	// check approve needed
+	if csvData.TotalAmount.Cmp(allowance) > 0 {
+		var willUseGasPrice *big.Int
+		var err error
+		for {
+			willUseGasPrice, err = client.SuggestGasPrice(context.Background())
+			if err != nil {
+				panic(err)
+			}
+			willUseGasPrice = new(big.Int).Add(willUseGasPrice, increaseGas)
+			if willUseGasPrice.Cmp(gasPriceLimit) > 0 {
+				time.Sleep(time.Second * 5)
+				continue
+			} else {
+				break
+			}
+		}
+		transacOpts.GasPrice = willUseGasPrice
+		tx, err := token.Approve(&transacOpts, airdropAddress, csvData.TotalAmount)
+		if err != nil {
+			log.Fatal("approve erc20 error: ", err)
+			panic(err)
+		}
+		fmt.Println("approve tx hash: ", tx.Hash().String())
+		for {
+			_, pending, err := client.TransactionByHash(context.Background(), tx.Hash())
+			if err == nil && !pending {
+				break
+			} else {
+				if err != nil {
+					fmt.Println("approve tx status: ", err)
+				} else {
+					fmt.Println("approve tx status: is pending...")
+				}
+				time.Sleep(time.Second * 8)
+				continue
+			}
+		}
+		fmt.Println("approve tx ok: ", tx.Hash().String())
+	}
 
 	for i := 1; i <= count; i++ {
-		var subAddress []string
-		var subAmount []int64
+		// ==== collect address
+		var subAddress []common.Address
+		var subAmount []*big.Int
 		if i == count {
 			subAddress = csvData.Address[(i-1)*config.AIRDROPPER : addrNum]
 			subAmount = csvData.Amount[(i-1)*config.AIRDROPPER : amountNum]
@@ -65,10 +158,53 @@ func Airdrop() {
 		fmt.Printf("airdrop %dth:\n", i)
 		fmt.Println(subAddress)
 		fmt.Println(subAmount)
+
+		// === send erc20
+		fmt.Println("will send transInfo。")
+		var willUseGasPrice *big.Int
+		var err error
+		for {
+			willUseGasPrice, err = client.SuggestGasPrice(context.Background())
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("suggest gas price: ", new(big.Int).Div(willUseGasPrice, big.NewInt(oneGwei)))
+			willUseGasPrice = new(big.Int).Add(willUseGasPrice, increaseGas)
+			if willUseGasPrice.Cmp(gasPriceLimit) > 0 {
+				time.Sleep(time.Second * 5)
+				continue
+			} else {
+				break
+			}
+		}
+		transacOpts.GasPrice = willUseGasPrice
+		fmt.Println("final use gas price: ", new(big.Int).Div(willUseGasPrice, big.NewInt(oneGwei)))
+		tx, err := airdrop.DoAirDropMultiple(
+			&transacOpts,
+			common.HexToAddress(config.TOKENADDR),
+			subAddress,
+			subAmount)
+		if err != nil {
+			log.Fatal("send erc20 error: ", err)
+			panic(err)
+		}
+		fmt.Println("tx hash:", tx.Hash().String())
+		for {
+			_, pending, err := client.TransactionByHash(context.Background(), tx.Hash())
+			if err == nil && !pending {
+				break
+			} else {
+				if err != nil {
+					fmt.Println("tx status: ", err)
+				} else {
+					fmt.Println("tx status: is pending...")
+				}
+				time.Sleep(time.Second * 8)
+				continue
+			}
+		}
+		fmt.Println("tx ok: ", tx.Hash().String())
 	}
-	//for _, info := range csvData {
-	//	fmt.Printf("%s: %s\n", info.Address, info.Amount)
-	//}
 }
 
 // AirDropper is an auto generated Go binding around an Ethereum contract.

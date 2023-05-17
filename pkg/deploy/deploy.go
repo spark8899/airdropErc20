@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/spark8899/airdropErc20/pkg/config"
+	"github.com/spark8899/airdropErc20/pkg/contract"
 	"github.com/spark8899/airdropErc20/pkg/utils"
 )
 
@@ -54,7 +55,7 @@ func Deploy(contranName string) {
 	}
 
 	// get auth
-	auth, err := getAccountAuth(client, config.PRIVATEKEY, config.GASLIMIT)
+	auth, err := contract.GetAccountAuth(client, config.PRIVATEKEY, config.GASLIMIT)
 	if err != nil {
 		log.Fatal("Cannot load abi, error: ", err)
 	}

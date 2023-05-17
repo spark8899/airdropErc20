@@ -8,6 +8,7 @@ import (
 
 	"github.com/spark8899/airdropErc20/pkg/config"
 	"github.com/spark8899/airdropErc20/pkg/contract"
+	dp "github.com/spark8899/airdropErc20/pkg/deploy"
 	"github.com/spf13/cobra"
 )
 
@@ -26,11 +27,11 @@ var deployCmd = &cobra.Command{
 		if contact_name == "token" {
 			fmt.Println("Deploy contract:", config.TOKEN)
 			fmt.Println("RPC URL:", config.RPCURL)
-			contract.Deploy(config.TOKEN)
+			dp.Deploy(config.TOKEN)
 		} else if contact_name == "airdrop" {
 			fmt.Println("Deploy contract:", config.AIRDROP)
 			fmt.Println("RPC URL:", config.RPCURL)
-			contract.Deploy(config.AIRDROP)
+			dp.Deploy(config.AIRDROP)
 		} else {
 			fmt.Println("Please input contract name in (token|airdrop), you input:", contact_name)
 			os.Exit(15)

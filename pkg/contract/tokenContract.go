@@ -205,6 +205,42 @@ func (_Contracts *TokenContractsTransactorSession) TransferFrom(from common.Addr
 	return _Contracts.Contract.TransferFrom(&_Contracts.TransactOpts, from, to, amount)
 }
 
+// Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
+func (_Contracts *TokenContractsTransactor) Approve(opts *bind.TransactOpts, spender common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _Contracts.contract.Transact(opts, "approve", spender, amount)
+}
+
+func (_Contracts *TokenContractsSession) Approve(spender common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _Contracts.Contract.Approve(&_Contracts.TransactOpts, spender, amount)
+}
+
+func (_Contracts *TokenContractsTransactorSession) Approve(spender common.Address, amount *big.Int) (*types.Transaction, error) {
+	return _Contracts.Contract.Approve(&_Contracts.TransactOpts, spender, amount)
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+func (_Contracts *TokenContractsCaller) Allowance(opts *bind.CallOpts, owner common.Address, spender common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _Contracts.contract.Call(opts, &out, "allowance", owner, spender)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+func (_Contracts *TokenContractsSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
+	return _Contracts.Contract.Allowance(&_Contracts.CallOpts, owner, spender)
+}
+
+func (_Contracts *TokenContractsCallerSession) Allowance(owner common.Address, spender common.Address) (*big.Int, error) {
+	return _Contracts.Contract.Allowance(&_Contracts.CallOpts, owner, spender)
+}
+
 // Get Token Meta Data
 func getTokenMetaData() *bind.MetaData {
 	config, err := config.LoadConfig()
