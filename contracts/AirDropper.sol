@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 interface IERC20 {
     function balanceOf(address account) external view returns (uint256);
     function transfer(address recipient, uint256 amount) external returns (bool);
+    function transferFrom(address from, address recipient, uint256 amount) external returns (bool);
 }
 
 contract AirDropper is Ownable {
@@ -26,21 +27,21 @@ contract AirDropper is Ownable {
         payable(to==address(0)?msg.sender:to).transfer(balance);
     }
 
-    function doAirDropSingle(address token, address[] memory dests, uint256 value) public onlyOwner {
+    function doAirDropSingle(address token, address from, address[] memory dests, uint256 value) public onlyOwner {
 
         for(uint256 i=0;i<dests.length;i++){
-            IERC20(token).transfer(dests[i], value);
+            IERC20(token).transferFrom(from, dests[i], value);
         }
 
     }
 
-    function doAirDropMultiple(address token, address[] memory dests, uint256[] memory values) public onlyOwner {
+    function doAirDropMultiple(address token, address from, address[] memory dests, uint256[] memory values) public onlyOwner {
 
         require(dests.length == values.length,
             "length not match"
         );
         for(uint256 i=0;i<dests.length;i++){
-            IERC20(token).transfer(dests[i], values[i]);
+            IERC20(token).transferFrom(from, dests[i], values[i]);
         }
 
     }

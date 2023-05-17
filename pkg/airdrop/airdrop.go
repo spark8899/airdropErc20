@@ -182,6 +182,7 @@ func Airdrop() {
 		tx, err := airdrop.DoAirDropMultiple(
 			&transacOpts,
 			common.HexToAddress(config.TOKENADDR),
+			auth.From,
 			subAddress,
 			subAmount)
 		if err != nil {
@@ -247,14 +248,14 @@ func bindAirDropper(address common.Address, caller bind.ContractCaller, transact
 	return bind.NewBoundContract(address, *parsed, caller, transactor, filterer), nil
 }
 
-// Solidity: function doAirDropSingle(address token, address[] dests, uint256 value) returns()
-func (_AirDropper *AirDropperTransactor) DoAirDropSingle(opts *bind.TransactOpts, token common.Address, dests []common.Address, value *big.Int) (*types.Transaction, error) {
-	return _AirDropper.contract.Transact(opts, "doAirDropSingle", token, dests, value)
+// Solidity: function doAirDropSingle(address token, address from, address[] dests, uint256 value) returns()
+func (_AirDropper *AirDropperTransactor) DoAirDropSingle(opts *bind.TransactOpts, token common.Address, from common.Address, dests []common.Address, value *big.Int) (*types.Transaction, error) {
+	return _AirDropper.contract.Transact(opts, "doAirDropSingle", token, from, dests, value)
 }
 
-// Solidity: function doAirDropMultiple(address token, address[] dests, uint256[] values) returns()
-func (_AirDropper *AirDropperTransactor) DoAirDropMultiple(opts *bind.TransactOpts, token common.Address, dests []common.Address, values []*big.Int) (*types.Transaction, error) {
-	return _AirDropper.contract.Transact(opts, "doAirDropMultiple", token, dests, values)
+// Solidity: function doAirDropMultiple(address token, address from, address[] dests, uint256[] values) returns()
+func (_AirDropper *AirDropperTransactor) DoAirDropMultiple(opts *bind.TransactOpts, token common.Address, from common.Address, dests []common.Address, values []*big.Int) (*types.Transaction, error) {
+	return _AirDropper.contract.Transact(opts, "doAirDropMultiple", token, from, dests, values)
 }
 
 // Get AirDropper Meta Data
